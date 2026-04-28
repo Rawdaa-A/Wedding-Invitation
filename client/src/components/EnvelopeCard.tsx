@@ -42,7 +42,7 @@ export default function EnvelopeCard({ onOpen }: EnvelopeCardProps) {
           transition={{ duration: 0.3 }}
         >
           <img
-            src="/assets/envelope.png"
+            src="/assets/envelope.webp"
             alt="Wedding Invitation Envelope"
             className="w-full h-auto drop-shadow-2xl"
           />
