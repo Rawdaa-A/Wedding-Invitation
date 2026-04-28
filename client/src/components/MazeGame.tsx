@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Heart } from 'lucide-react';
+import confetti from 'canvas-confetti';
 
 interface MazeGameProps {
   onComplete: () => void;
@@ -32,6 +33,35 @@ export default function MazeGame({ onComplete }: MazeGameProps) {
     return walls.some(wall => wall.x === x && wall.y === y);
   };
 
+  const triggerConfetti = () => {
+    // Confetti burst from center
+    confetti({
+      particleCount: 100,
+      spread: 70,
+      origin: { y: 0.6 },
+      colors: ['#d4af37', '#f5e6d3', '#e8d5c4', '#ffffff'],
+    });
+
+    // Additional confetti bursts
+    setTimeout(() => {
+      confetti({
+        particleCount: 50,
+        spread: 100,
+        origin: { x: 0.2, y: 0.5 },
+        colors: ['#d4af37', '#f5e6d3'],
+      });
+    }, 200);
+
+    setTimeout(() => {
+      confetti({
+        particleCount: 50,
+        spread: 100,
+        origin: { x: 0.8, y: 0.5 },
+        colors: ['#d4af37', '#e8d5c4'],
+      });
+    }, 400);
+  };
+
   const moveGroom = (dx: number, dy: number) => {
     if (won) return;
     const newX = groomPos.x + dx;
@@ -41,7 +71,8 @@ export default function MazeGame({ onComplete }: MazeGameProps) {
       setGroomPos({ x: newX, y: newY });
       if (newX === bridePos.x && newY === bridePos.y) {
         setWon(true);
-        onComplete();
+        triggerConfetti();
+        setTimeout(() => onComplete(), 1500);
       }
     }
   };
@@ -70,7 +101,7 @@ export default function MazeGame({ onComplete }: MazeGameProps) {
     ctx.fillStyle = '#ffffff';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // Draw walls with Beige color as requested
+    // Draw walls with Beige color
     ctx.fillStyle = '#f5e6d3';
     walls.forEach(wall => {
       ctx.fillRect(wall.x * CELL_SIZE, wall.y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
@@ -107,11 +138,18 @@ export default function MazeGame({ onComplete }: MazeGameProps) {
       )}
       {won && (
         <motion.div 
-          initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+          initial={{ opacity: 0, scale: 0.8 }} 
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5 }}
           className="mt-4 flex flex-col items-center"
         >
-          <Heart className="w-8 h-8 text-[#d4af37] fill-[#d4af37] mb-1" />
-          <p className="font-display text-lg text-[#d4af37]">Together Forever!</p>
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ duration: 1, repeat: Infinity }}
+          >
+            <Heart className="w-10 h-10 text-[#d4af37] fill-[#d4af37]" />
+          </motion.div>
+          <p className="font-display text-lg text-[#d4af37] mt-2">Together Forever!</p>
         </motion.div>
       )}
     </div>
